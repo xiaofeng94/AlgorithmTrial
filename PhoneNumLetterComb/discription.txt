@@ -1,0 +1,11 @@
+Problem:
+Given a digit string, return all possible letter combinations that the number could represent.
+
+A mapping of digit to letters is just like on the telephone buttons.
+
+Input:Digit string "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+
+Hits:
+backtracking/string
