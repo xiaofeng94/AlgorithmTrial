@@ -7,40 +7,58 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-class Solution {
+ class Solution {
 public:
     int maxPathSum(TreeNode* root) {
-        int max = 0;
-        searchBoth(root,max);
+        TreeNode* auxiliary;
+        int max = searchCompute(root,auxiliary);
+        searchMax(root,auxiliary,max);
         return max;
     }
-    void searchBoth(TreeNode* curr,int& max){
+    int searchCompute(TreeNode* curr,TreeNode* &auxCurr){
         if(curr == nullptr){
-            return;
+            return 0;
         }
-        int sideMaxLeft = 0;
-        int sideMaxRight = 0;
-        searchSide(curr->left,0,sideMaxLeft);
-        searchSide(curr->right,0,sideMaxRight);
-        int currSum = curr->val + sideMaxLeft + sideMaxRight;
-        
-        if(currSum > max){
-            max = currSum;
+        auxCurr = new TreeNode(curr->val);
+        int left = searchCompute(curr->left,auxCurr->left);
+        int right = searchCompute(curr->right,auxCurr->right);
+        if(left > 0 || right > 0){
+            if(left > right){
+                curr->val += left;
+            }else{
+                curr->val += right;
+            }
         }
-        
-        searchBoth(curr->left,max);
-        searchBoth(curr->right,max);
+        return curr->val;
     }
-    
-    void searchSide(TreeNode* curr,int lastSum ,int& sideMax){
+    void searchMax(TreeNode* curr,TreeNode* auxCurr,int& max){
         if(curr == nullptr){
             return;
         }
-        int currSum = lastSum + curr->val;
-        if(currSum > sideMax){
-            sideMax = currSum;
+        int tempSum = auxCurr->val;
+        if(curr->left != nullptr && curr->left->val > 0){
+            tempSum += curr->left->val;
         }
-        searchSide(curr->left,currSum ,sideMax);
-        searchSide(curr->right,currSum ,sideMax);
+        if(curr->right != nullptr && curr->right->val > 0){
+            tempSum += curr->right->val;
+        }
+        
+        if(max < tempSum){
+            max = tempSum;
+        }
+        searchMax(curr->left,auxCurr->left,max);
+        searchMax(curr->right,auxCurr->right,max);
     }
 };
+
+TreeNode* createTree(TreeNode* &curr,vector<int>& data,int indx){
+    if (indx >= data.size()) {
+        return nullptr;
+    }
+    curr = new TreeNode(data[indx]);
+    
+    createTree(curr->left,data,2*indx+1);
+    createTree(curr->right,data,2*indx+2);
+    
+    return curr;
+}
